@@ -18,6 +18,7 @@ http://localhost:8080/
 API Methods
 
 Below is the runtime/space complexity of each API call:
+
 /metrics -> getAllMetrics – runtime: O(1), space: O(n) where n is the total number of metric values among all metrics
 
 /metircs/add/{metricName}/{metricValue}/ -> addMetric – runtime: O(1), space O(1)
