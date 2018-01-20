@@ -5,11 +5,15 @@ By Alexander Page
 Overview
 
 For this project I decided to use Java as my programming language because I am familiar with it. I also chose to use Spring Boot as this provides a robust framework for web applications like the one being asked for in this project. To build the application I chose Gradle as this plays nicely with Spring Boot / Java and makes for quick and easy deployments. Spring Boot utilizes an embedded Tomcat server which is both easy to test with as well as very quick to start/stop.
+
 As a self-documenting option, I chose to utilize swagger. This automatically documents the various endpoints in my API and additionally allows for simplified request/response testing for end users. The Metrics API swagger page can be viewed at the following URL once the application is running: 
 http://localhost:8080/swagger-ui.html#/metric-api-controller
+
 Additionally, I created a front-end GUI which allows simplified access to the API by offering some of the more basic functionality in the form of input fields and multiple response displays (the chart, the log, the metric dump). The GUI connects to the API via web socket connection for a more responsive feel when adding metrics. For this front-end, I utilized Chart.js, JQuery, HTML/CSS, and SockJS. The front-end component was not asked for in this project, but I enjoy working with front-end technologies and thought that it complimented the API nicely.
+
 The GUI can be accessed by going to the following URL/port once the application has been booted:
 http://localhost:8080/
+
 
 API Methods
 
@@ -37,6 +41,7 @@ The unit tests were written as JUnits and are located in the test package. These
 The report of the unit tests can be found at the following location in the project directory after performing the Gradle build:
 metric-api/build/reports/tests/test/classes/metric.api.test.MetricUnitTests.html
 
+
 Build/Deploy Instructions
 
 Option A: via Gradle in Eclipse
@@ -57,6 +62,7 @@ Option B: via Gradle in Windows Command Prompt
 7.	Run the following command: gradlew run
 8.	The application will be booted on Spring Boot’s internal Tomcat server
 9.	The application/API will then be made available at http://localhost:8080 
+
 
 Enhancements
 
