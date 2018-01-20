@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Metric API Portal</title>
+    
+    <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/main.css" rel="stylesheet">
+    
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <script src="/app.js"></script>
+    
+    <script src="Chart.bundle.js"></script>
+    <script src="utils.js"></script>
+</head>
+<body>
+<noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being
+    enabled. Please enable Javascript and reload this page!</h2></noscript>
+	<div id="main-content" class="container">
+		<div class="row">
+	        <div class="col-md-12">
+	        	<h1>Metrics API Portal</h1>
+	        	<small id="documentationLink"><a target="_blank" href="swagger-ui.html#/metric-api-controller">API Documentation</a></small>
+	        	<hr>
+	        </div>
+	    </div>
+	    
+	    <div class="row">
+	        <div class="col-md-6">
+	            <form class="form-inline">
+	                <div class="form-group">
+	                    <label for="connect">WebSocket connection:</label>
+	                    <button id="connect" class="btn btn-success" type="submit">Connect</button>
+	                    <button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnected
+	                    </button>
+	                </div>
+	            </form>
+	        </div>
+	        <div class="col-md-6">
+	            <form class="form-inline">
+	                <div class="form-group">
+	                    <label for="name">Metric name</label>
+	                    <input type="text" id="name" class="form-control" placeholder="Metric name here..." required><br>
+	                    <label for="value">Metric value</label>
+	                    <input type="number" step="any" id="value" class="form-control" placeholder="Metric value here..." required>
+	                </div>
+	                <button id="send" class="btn btn-primary" type="submit">Add Metric</button>
+	            </form>
+	        </div>
+	    </div>
+	    
+	    <div class="row">
+	        <div class="col-md-12">
+			    <div style="width:100%;">
+			        <canvas id="canvas"></canvas>
+			    </div>
+			    <br>
+			    <div>
+			    	<button id="clear" class="btn btn-default" type="submit">Clear Data</button>
+			    </div>
+			    <br>
+			    <div style="display:none;">
+				    <button id="randomizeData">Randomize Data</button>
+				    <button id="addDataset">Add Dataset</button>
+				    <button id="removeDataset">Remove Dataset</button>
+				    <button id="addData">Add Data</button>
+				    <button id="removeData">Remove Data</button>
+				</div>
+			</div>
+		</div>
+		
+		<div class="row">
+	        <div class="col-md-12">
+	            <table id="currentMetricsContainer" class="table table-striped">
+	                <thead>
+	                <tr>
+	                    <th>Current Metrics</th>
+	                </tr>
+	                </thead>
+	                <tbody id="currentMetrics">
+	                </tbody>
+	            </table>
+	        </div>
+	    </div>
+	    
+	    <div class="row">
+	        <div class="col-md-12">
+	            <table id="conversation" class="table table-striped">
+	                <thead>
+	                <tr>
+	                    <th>Metric Log</th>
+	                </tr>
+	                </thead>
+	                <tbody id="metrics">
+	                </tbody>
+	            </table>
+	        </div>
+	    </div>
+	    
+	    <script>
+	        var values = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
+	        var config = {
+	            type: 'line',
+	            data: {
+	                labels: ["1", "2", "3", "4", "5", "6", "7"],
+	                datasets: []
+	            },
+	            options: {
+	                responsive: true,
+	                title:{
+	                    display:true,
+	                    text:'Metrics Chart'
+	                },
+	                tooltips: {
+	                    mode: 'index',
+	                    intersect: false,
+	                },
+	                hover: {
+	                    mode: 'nearest',
+	                    intersect: true
+	                },
+	                scales: {
+	                    xAxes: [{
+	                        display: true,
+	                        scaleLabel: {
+	                            display: true,
+	                            labelString: 'Metric #'
+	                        }
+	                    }],
+	                    yAxes: [{
+	                        display: true,
+	                        scaleLabel: {
+	                            display: true,
+	                            labelString: 'Metric Value'
+	                        }
+	                    }]
+	                }
+	            }
+	        };
+	
+	        window.onload = function() {
+	            var ctx = document.getElementById("canvas").getContext("2d");
+	            window.myLine = new Chart(ctx, config);
+	        };
+	
+	        document.getElementById('randomizeData').addEventListener('click', function() {
+	            config.data.datasets.forEach(function(dataset) {
+	                dataset.data = dataset.data.map(function() {
+	                    return randomScalingFactor();
+	                });
+	
+	            });
+	
+	            window.myLine.update();
+	        });
+	
+	        var colorNames = Object.keys(window.chartColors);
+	        document.getElementById('addDataset').addEventListener('click', function() {
+	            var colorName = colorNames[config.data.datasets.length % colorNames.length];
+	            var newColor = window.chartColors[colorName];
+	            var newDataset = {
+	                label: 'Dataset ' + config.data.datasets.length,
+	                backgroundColor: newColor,
+	                borderColor: newColor,
+	                data: [],
+	                fill: false
+	            };
+	
+	            for (var index = 0; index < config.data.labels.length; ++index) {
+	                newDataset.data.push(randomScalingFactor());
+	            }
+	
+	            config.data.datasets.push(newDataset);
+	            window.myLine.update();
+	        });
+	
+	        document.getElementById('addData').addEventListener('click', function() {
+	            if (config.data.datasets.length > 0) {
+	                var month = values[config.data.labels.length % values.length];
+	                config.data.labels.push(month);
+	
+	                config.data.datasets.forEach(function(dataset) {
+	                    dataset.data.push(randomScalingFactor());
+	                });
+	
+	                window.myLine.update();
+	            }
+	        });
+	
+	        document.getElementById('removeDataset').addEventListener('click', function() {
+	            config.data.datasets.splice(0, 1);
+	            window.myLine.update();
+	        });
+	
+	        document.getElementById('removeData').addEventListener('click', function() {
+	            config.data.labels.splice(-1, 1); // remove the label first
+	
+	            config.data.datasets.forEach(function(dataset, datasetIndex) {
+	                dataset.data.pop();
+	            });
+	
+	            window.myLine.update();
+	        });
+	    </script>
+	</div>
+</body>
+</html>
