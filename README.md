@@ -15,13 +15,21 @@ API Methods
 
 Below is the runtime/space complexity of each API call:
 /metrics -> getAllMetrics – runtime: O(1), space: O(n) where n is the total number of metric values among all metrics
+
 /metircs/add/{metricName}/{metricValue}/ -> addMetric – runtime: O(1), space O(1)
+
 /metrics/clear -> clearAllMetrics – runtime: O(1), space O(1)
+
 /metrics/max/{metricName} -> getMax – runtime: O(1), space O(1)
+
 /metrics/mean/{metricName} -> getMean – runtime: O(n), space O(1) where n is the number of metric values for this metric
+
 /metrics/median/{metricName} -> getMedian – runtime: O(n log n), space O(n) where n is the number of metric values for this metric
+
 /metrics/min/{metricName} -> getMin – runtime: O(1), space O(1)
+
 /metrics/{metricName} -> getSpecificMetric – runtime: O(1), space O(n) where n is the number of metric values for this metric
+
 
 Unit Tests
 
@@ -38,6 +46,7 @@ Option A: via Gradle in Eclipse
 4.	Right click on project, Run As -> Spring Boot App
 5.	The application will be booted on Spring Boot’s internal Tomcat server
 6.	The application/API will then be made available at http://localhost:8080 
+
 Option B: via Gradle in Windows Command Prompt
 1.	Ensure Gradle is installed on the Windows machine
 2.	Ensure JAVA_HOME is set to the JDK folder for Java 8
