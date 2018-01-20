@@ -3,6 +3,7 @@ Metrics API
 By Alexander Page
 
 Overview
+
 For this project I decided to use Java as my programming language because I am familiar with it. I also chose to use Spring Boot as this provides a robust framework for web applications like the one being asked for in this project. To build the application I chose Gradle as this plays nicely with Spring Boot / Java and makes for quick and easy deployments. Spring Boot utilizes an embedded Tomcat server which is both easy to test with as well as very quick to start/stop.
 As a self-documenting option, I chose to utilize swagger. This automatically documents the various endpoints in my API and additionally allows for simplified request/response testing for end users. The Metrics API swagger page can be viewed at the following URL once the application is running: 
 http://localhost:8080/swagger-ui.html#/metric-api-controller
@@ -11,6 +12,7 @@ The GUI can be accessed by going to the following URL/port once the application 
 http://localhost:8080/
 
 API Methods
+
 Below is the runtime/space complexity of each API call:
 /metrics -> getAllMetrics – runtime: O(1), space: O(n) where n is the total number of metric values among all metrics
 /metircs/add/{metricName}/{metricValue}/ -> addMetric – runtime: O(1), space O(1)
@@ -22,11 +24,13 @@ Below is the runtime/space complexity of each API call:
 /metrics/{metricName} -> getSpecificMetric – runtime: O(1), space O(n) where n is the number of metric values for this metric
 
 Unit Tests
+
 The unit tests were written as JUnits and are located in the test package. These unit tests individually test each of the main API methods and do not require the application to be running. As part of the Gradle build, these unit tests will be ran and if unsuccessful will not allow deployment (with Option B). 
 The report of the unit tests can be found at the following location in the project directory after performing the Gradle build:
 metric-api/build/reports/tests/test/classes/metric.api.test.MetricUnitTests.html
 
 Build/Deploy Instructions
+
 Option A: via Gradle in Eclipse
 1.	Import the project as a Gradle project in Eclipse
 2.	Right click on project, Gradle -> Refresh Gradle Build
@@ -46,6 +50,7 @@ Option B: via Gradle in Windows Command Prompt
 9.	The application/API will then be made available at http://localhost:8080 
 
 Enhancements
+
 If I were to spend more time with developing this API, I would make the following enhancements:
 1.	Add log4j logging so the API logs to a file on the server that is managed by a rolling file appender and has a policy to archive/zip log files of a certain age or older to keep a history in a compressed format.
 2.	If the getMedian method was called frequently by users, I would implement a red/black tree to store the values for a given metric. This would allow me to make the access of the median value an O(1) operation, but this would also slightly slow down my insert performance when adding a metric value to O(log n), so there would need to be good reason to make this change.
